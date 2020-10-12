@@ -1,0 +1,54 @@
+# COMMAND ----------
+from pyspark.sql import functions as F
+from pyspark.sql.functions import datediff, to_date, lit,expr
+
+# COMMAND ----------
+#!pip /usr/bin/spark-shell --packages com.databricks:spark-xml_2.12:0.10.0
+
+# COMMAND ----------
+# MAGIC %md
+# MAGIC 
+# MAGIC ## upload data using ui/databcricks cli
+# COMMAND ----------
+
+# COMMAND ----------
+# List files in DBFS
+#dbfs ls
+# Put local file ./57694.xml to dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml
+#dbfs cp ./57694.xml dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml
+# Get dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml and save to local file ./57694.xml
+#dbfs cp dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml ./57694.xml
+# Recursively put local dir ./banana to dbfs:/banana
+#dbfs cp -r ./test dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/test
+
+# COMMAND ----------
+%fs ls  dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/trades
+
+# COMMAND ----------
+df_text = spark.read.text("dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/trades/57694.xml")
+display(df_text)
+
+# COMMAND ----------
+df_tade_seller = spark.read.format("com.databricks.spark.xml").option("rowTag","trade").option("rootTag","seller").load("adl://haaldatalake.azuredatalakestore.net/use_cases/recommendation/tempsubas/tempsubas/trades/*")
+df_tade_seller.count()
+
+# COMMAND ----------
+df_trade_seller_standard.printSchema()
+
+# COMMAND ----------
+df_trade_seller_standard = df_tade_seller.filter(F.col("_type") == "Standard")
+df_trade_seller_standard.count()
+
+# COMMAND ----------
+display(df_trade_seller_standard)
+
+# COMMAND ----------
+df_trade_seller_standard_expected = df_trade_seller_standard.withColumn("expected_duration",datediff(to_date(F.col("expected_payment_date")),
+                       to_date(F.col("advance.date"))))
+display(df_trade_seller_standard_expected)
+
+# COMMAND ----------
+df_trade_seller_standard_expected_previously_settled = df_trade_seller_standard_expected.where(to_date(F.col("settlement_date")) <= to_date(F.col("advance.date")))
+df_trade_seller_standard_expected_settled_before = df_trade_seller_standard_expected.filter(to_date(F.col("settlement_date")) <= to_date(F.col("advance.date"))).select('_id')
+display(df_trade_seller_standard_expected_settled_before)
+                     
