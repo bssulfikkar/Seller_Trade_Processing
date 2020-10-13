@@ -14,18 +14,18 @@ from pyspark.sql.functions import datediff, to_date, lit,expr
 # COMMAND ----------
 # List files in DBFS
 #dbfs ls
-# Put local file ./57694.xml to dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml
-#dbfs cp ./57694.xml dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml
-# Get dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml and save to local file ./57694.xml
-#dbfs cp dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/57694.xml ./57694.xml
+# Put local file ./57694.xml to dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja/57694.xml
+#dbfs cp ./57694.xml dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja/57694.xml
+# Get dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaj/57694.xml and save to local file ./57694.xml
+#dbfs cp dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja/57694.xml ./57694.xml
 # Recursively put local dir ./banana to dbfs:/banana
-#dbfs cp -r ./test dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/test
+#dbfs cp -r ./test dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja/test
 
 # COMMAND ----------
-%fs ls  dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/trades
+%fs ls  dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja/trades
 
 # COMMAND ----------
-df_text = spark.read.text("dbfs:/FileStore/shared_uploads/sulfikkar.basheershylaja@hm.com/trades/57694.xml")
+df_text = spark.read.text("dbfs:/FileStore/shared_uploads/sulfikkar.basheershylajam/trades/57694.xml")
 display(df_text)
 
 # COMMAND ----------
