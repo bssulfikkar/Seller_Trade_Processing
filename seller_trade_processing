@@ -29,26 +29,32 @@ df_text = spark.read.text("dbfs:/FileStore/shared_uploads/sulfikkar.basheershyla
 display(df_text)
 
 # COMMAND ----------
-df_tade_seller = spark.read.format("com.databricks.spark.xml").option("rowTag","trade").option("rootTag","seller").load("adl://haaldatalake.azuredatalakestore.net/use_cases/recommendation/tempsubas/tempsubas/trades/*")
+df_tade_seller = spark.read.format("com.databricks.spark.xml").option("rowTag","loan").option("rootTag","seller").load("adl://haaldatalake.azuredatalakestore.net/use_cases/recommendation/tempsubas/tempsubas/trades/*")commendation/tempsubas/tempsubas/trades/*")
 df_tade_seller.count()
 
 # COMMAND ----------
-df_trade_seller_standard.printSchema()
+df_tade_seller.printSchema()
 
 # COMMAND ----------
-df_trade_seller_standard = df_tade_seller.filter(F.col("_type") == "Standard")
+df_trade_seller_standard = df_tade_seller.filter(F.col("trade._type") == "Standard")
 df_trade_seller_standard.count()
 
 # COMMAND ----------
 display(df_trade_seller_standard)
 
 # COMMAND ----------
-df_trade_seller_standard_expected = df_trade_seller_standard.withColumn("expected_duration",datediff(to_date(F.col("expected_payment_date")),
-                       to_date(F.col("advance.date"))))
+df_trade_seller_standard_expected = df_trade_seller_standard.withColumn("expected_duration",datediff(to_date(F.col("trade.expected_payment_date")),
+                       to_date(F.col("trade.advance.date"))))
 display(df_trade_seller_standard_expected)
 
 # COMMAND ----------
-df_trade_seller_standard_expected_previously_settled = df_trade_seller_standard_expected.where(to_date(F.col("settlement_date")) <= to_date(F.col("advance.date")))
-df_trade_seller_standard_expected_settled_before = df_trade_seller_standard_expected.filter(to_date(F.col("settlement_date")) <= to_date(F.col("advance.date"))).select('_id')
+df_trade_seller_standard_expected_previously_settled = df_trade_seller_standard_expected.where(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date")))
+display(df_trade_seller_standard_expected_previously_settled)
+
+# COMMAND ----------
+df_trade_seller_standard_expected_settled_before = df_trade_seller_standard_expected.filter(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date"))).select('seller.id','trade._id')
 display(df_trade_seller_standard_expected_settled_before)
-                     
+
+# COMMAND ----------
+df_trade_seller_standard_expected_settled_after = df_trade_seller_standard_expected.filter(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date"))).select('seller.id','trade._id')
+display(df_trade_seller_standard_expected_settled_after)
