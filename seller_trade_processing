@@ -52,9 +52,9 @@ df_trade_seller_standard_expected_previously_settled = df_trade_seller_standard_
 display(df_trade_seller_standard_expected_previously_settled)
 
 # COMMAND ----------
-df_trade_seller_standard_expected_settled_before = df_trade_seller_standard_expected.filter(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date"))).select('seller.id','trade._id')
+df_trade_seller_standard_expected_settled_before = df_trade_seller_standard_expected.filter(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date"))).groupBy('seller.id').agg(F.count('trade._id'))
 display(df_trade_seller_standard_expected_settled_before)
 
 # COMMAND ----------
-df_trade_seller_standard_expected_settled_after = df_trade_seller_standard_expected.filter(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date"))).select('seller.id','trade._id')
+df_trade_seller_standard_expected_settled_after = df_trade_seller_standard_expected.filter(to_date(F.col("trade.settlement_date")) <= to_date(F.col("trade.advance.date"))).groupBy('seller.id').agg(F.count('trade._id'))
 display(df_trade_seller_standard_expected_settled_after)
